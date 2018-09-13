@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <context:annotation-config/>
+
+    <!-- 自动扫描 -->
+    <context:component-scan base-package="com.asher">
+        <!-- 扫描时跳过 @Controller 注解的JAVA类（控制器） -->
+    </context:component-scan>
+
+    <context:property-placeholder location="classpath:/config/persistence-mysql.properties" ignore-unresolvable="true"/>
+
+    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="java:/comp/env/asher/test"></property>
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+                <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+                <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+                <prop key="hibernate.query.substitutions">${hibernate.query.substitutions}</prop>
+                <prop key="hibernate.default_batch_fetch_size">${hibernate.default_batch_fetch_size}</prop>
+                <prop key="hibernate.max_fetch_depth">${hibernate.max_fetch_depth}</prop>
+                <prop key="hibernate.generate_statistics">${hibernate.generate_statistics}</prop>
+                <prop key="hibernate.bytecode.use_reflection_optimizer">${hibernate.bytecode.use_reflection_optimizer}
+                </prop>
+                <prop key="hibernate.cache.use_second_level_cache">${hibernate.cache.use_second_level_cache}</prop>
+                <prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache}</prop>
+                <prop key="hibernate.cache.region.factory_class">${hibernate.cache.region.factory_class}</prop>
+                <prop key="hibernate.cache.use_structured_entries">${hibernate.cache.use_structured_entries}</prop>
+            </props>
+        </property>
+
+        <!-- 注意：我用的是Annotation的方式配置的Hibernate，这里的property的name是annotatedClasses -->
+        <property name="packagesToScan">
+            <list>
+                <value>com.asher.generate.entity</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 事务管理器 -->
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!--  开启注解事务 只对当前配置文件有效  -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <bean name="openSessionInViewInterceptor"
+          class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!-- 配置事务异常封装 -->
+    <bean id="persistenceExceptionTranslationPostProcessor"
+          class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+
+</beans>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="addForm" method="POST" action="http://localhost:8080/base/test/uploadFiles">
+    <input type="text" name="itemname" id="itemname"> <br/>
+    <input type="text" name="description" id="description"> <br/>
+    <input type="file" name="multiUploadFiles[0]" id="multiUploadFiles1"/> <br/>
+    <input type="file" name="multiUploadFiles[1]" id="multiUploadFiles2"/><br/>
+    <input type="button" id="submitBtn" value="提交"/>
+</form>
+<!-- 引入依赖的Jquery和JQuery-Form -->
+<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.form/4.2.1/jquery.form.min.js"
+        integrity="sha384-tIwI8+qJdZBtYYCKwRkjxBGQVZS3gGozr3CtI+5JF/oL1JmPEHzCEnIKbDbLTCer"
+        crossorigin="anonymous"></script>
+<!-- 自定义JavaScript -->
+<script type="text/javascript">
+    $("#submitBtn").on("click", function () {
+        var formData = new FormData();
+        formData.append("itemname", $("#itemname").val())
+        formData.append("description", $("#description").val())
+        formData.append("multiUploadFiles[0]",$("#multiUploadFiles1")[0].files[0])
+        formData.append("multiUploadFiles[1]",$("#multiUploadFiles2")[0].files[0])
+        formData.append("des[0]","图片1");
+        formData.append("des[1]","tupuan2");
+        $.ajax({
+            url: '/base/test/uploadFiles',
+            method: 'POST',
+            data: formData,
+            contentType: false, // 注意这里应设为false
+            processData: false,
+            success: function (data) {
+
+            },
+            error: function (jqXHR) {
+            }
+        })
+    });
+</script>
+</body>
+</html>
