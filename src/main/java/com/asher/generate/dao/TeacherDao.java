@@ -14,6 +14,10 @@ public class TeacherDao {
 
     public Teacher save(Teacher teacher) {
         Session session = sessionFactory.openSession();
-        return (Teacher) session.save(teacher);
+//        session.beginTransaction();
+        session.save(teacher);
+        session.flush();
+//        session.getTransaction().commit();
+        return teacher;
     }
 }

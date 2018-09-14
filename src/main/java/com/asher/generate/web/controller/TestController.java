@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Api(tags = "test")
-@Controller
+@RestController
 @RequestMapping("/test")
 public class TestController {
 
@@ -34,7 +34,7 @@ public class TestController {
     }
 
     @RequestMapping(value = "/forma", method = RequestMethod.POST)
-    public String form(Teacher teacher) {
+    public String form(@RequestBody Teacher teacher) {
         teacherDao.save(teacher);
         return "items/success";
     }
